@@ -51,7 +51,7 @@ module.exports.signup_get = (req, res) => {
 }
 
 module.exports.login_get = (req, res) => {
-  const user = req.user || null;                    // Assuming 'req.user' contains the logged-in user's info
+  const user = req.user || null;                    // assuming 'req.user' contains the logged-in user's info
   res.render('login', { user });
 };
 
@@ -63,7 +63,10 @@ module.exports.signup_post = async (req, res) => {
     const user = await User.create({ email, password });     //we need jsonwebtoken here         //id = user
     const token = createToken(user._id);
     res.cookie('jwt', token, {httpOnly:true, maxAge: maxAge * 1000});
-    res.status(201).json({user: user._id});
+    res.status(201).json({user: {
+     id: user._id,
+     email: user.email}
+    });
   }
   catch(err) {
     const errors = handleErrors(err);               //console.log(err);
@@ -79,7 +82,10 @@ module.exports.login_post = async (req, res) => {
     const user = await User.login(email,password);
     const token = createToken(user._id);
     res.cookie('jwt', token, {httpOnly:true, maxAge: maxAge * 1000});
-    res.status(200).json({user: user._id });
+    res.status(200).json({user: {
+      id: user._id,
+      email: user.email }
+    });
   }
   catch(err){
     const errors = handleErrors(err);
